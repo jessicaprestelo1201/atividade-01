@@ -59,9 +59,26 @@ candidatos.push(novoCandidato);
 return res.status(201).json ({
     message: "Candidato cadastrado com sucesso",
     novoCandidato,
-})
-
 });
 
+});
+// Rota para buscar um candidato
+candidatosRoutes.get("/:id", (req, res) => {
+    const{id} = req.params;
 
+    //console.log(id)
+    const candidato = candidatos.find((politico) => politico.id ==id);
+
+    if (!candidato) {
+        return res.status (404).json({
+message: "Candidato nao encontrado",
+        });
+    }
+
+    return res.status(200).send ({
+        message: "Candidato encontrado",
+        candidatos,
+    });
+
+        });
 export default candidatosRoutes;
