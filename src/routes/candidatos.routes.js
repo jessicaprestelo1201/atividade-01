@@ -2,10 +2,9 @@ import { Router } from "express";
 
 const candidatosRoutes = Router()
 
-
 let candidatos = [
     {
-        id: Math.random() * 1000000,
+        id: Math.floor(Math.random() * 1000000),
         nome: "Capita Lucimara",
         partido: "PSD",
         idade: 42,
@@ -15,98 +14,54 @@ let candidatos = [
             "Redução de impostos",
             "Mais investimentos em educação"
         ]
-    }
+    },
 ]
 //Rota para buscar todas as emoções
 candidatosRoutes.get("/", (req, res) => {
     return res.status(200).json(candidatos)
 })
 
-//criar nova emoção
 candidatosRoutes.post("/", (req, res) => {
-    const { nome, cor } = req.body
+    const {
+        nome,
+        partido,
+        idade,
+        segundo,
+        propostas
+    } = req.body;
 
-    const novaEmocao = {
-        id: emocoes.length + 1,
-        nome: nome,
-        cor: cor
-    }
+    //validação dos campos nome e partiçipação
 
-    emocoes.push(novaEmocao)
-    return res.status(201).send(novaEmocao)
-});
+    if (! nome || !partido ) {
+        return res.status(400).send({
+message: "O nome ou o partido não foi preenchido!",
 
-//Rota  para buscar uma emoção pelo id
-candidatosRoutes.get("/:id", (req, res) => {
-    const { id } = req.params;
-    //console.log(id);
-    const emocao = emocoes.find((emotion) => emotion.id == id)
+        })
+    };
 
-    if (!emocao) {
-        return res.status(404).send({
-            message: "Emoção não enconrada!",
-        });
-    }
-    return res.status(200).send({
-        message: "Emoção encontrada",
-        emocao,
+    //Validação de idade
+    if(idade < 18) {
+        return res.status(400).send({
+            message: "Idade inválida",
     });
+}
+
+const novoCandidato = {
+    id: Math.floor (Math.random() * 10000000),
+    nome,
+    partido,
+    idade,
+    segundo,
+    propostas
+};
+
+candidatos.push(novoCandidato);
+return res.status(201).json ({
+    message: "Candidato cadastrado com sucesso",
+    novoCandidato,
+})
 
 });
 
-candidatosRoutes.put("/:id", (req, res) => {
-    const { id } = req.params;
-
-    const emocao = emocoes.find((emotion) => emotion.id == id)
-
-    if (!emocao) {
-        return res.status(404).send({
-            message: "Emoção não encontrada!",
-        });
-    }
-    const { nome, cor } = req.body;
-    emocao.nome = nome;
-    emocao.cor = cor;
-
-    return res.status(200).send({
-        message: "Emoção atualizada!",
-        emocao,
-    });
-});
-candidatosRoutes.delete("/:id", (req, res) => {
-    const { id } = req.params;
-    //console.log(id);
-    const emocao = emocoes.find((emotion) => emotion.id == id)
-
-    if (!emocao) {
-        return res.status(404).send({
-            message: "Emoção não enconrada!",
-        });
-    }
-    return res.status(200).send({
-        message: "Emoção encontrada",
-        emocao,
-    });
-
-});
-candidatosRoutes.delete("/:id", (req, res) => {
-    const { id } = req.params;
-
-    const emocao = emocoes.filter((emotion) => emotion.id == id);
-
-    if (!emocao) {
-        return res.status(404).send({
-            message: "Emoção não encontrada!",
-        });
-    }
-
-    emocoes = emocoes.filter((emotion) => emotion.id != id)
-
-    return res.status(200).send({
-        message: "Emoção deletada",
-        emocao,
-    });
-
-});
 
 export default candidatosRoutes;
